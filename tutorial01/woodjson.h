@@ -16,9 +16,9 @@ typedef struct {
 // 返回值是以下枚举值，无错误会返回 WOOD_PARSE_OK
 enum {
     WOOD_PARSE_OK = 0,            // 没有错误
-    WOOD_PARSE_EXPECT_VALUE,      // 一个 JSON 只含有空白
-    WOOD_PARSE_INVALID_VALUE,     // 若一个值之后，在空白之后还有其他字符
-    WOOD_PARSE_ROOT_NOT_SINGULAR  // 若值不是那三种字面值
+    WOOD_PARSE_EXPECT_VALUE,      // 一个 JSON 只含有空白，例如""
+    WOOD_PARSE_INVALID_VALUE,     // 若值不是那三种字面值，例如"nul"
+    WOOD_PARSE_ROOT_NOT_SINGULAR  // 若一个值之后，在空白之后还有其他字符，例如"null x"
 };
 
 

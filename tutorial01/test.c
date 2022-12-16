@@ -24,6 +24,7 @@ static int test_pass = 0;
 // 提供了一个 EXPECT_EQ_INT(expect, actual) 的宏，每次使用这个宏时，如果 expect != actual （预期值不等于实际值），便会输出错误信息。
 #define EXPECT_EQ_INT(expect, actual) EXPECT_EQ_BASE((expect) == (actual), expect, actual, "%d")
 
+// 测试 null = "null"
 static void test_parse_null() {
     wood_value v;
     v.type = WOOD_FALSE;
@@ -31,6 +32,7 @@ static void test_parse_null() {
     EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));
 }
 
+// 测试返回值(json 只含有空白) WOOD_PARSE_EXPECT_VALUE
 static void test_parse_expect_value() {
     wood_value v;
     
@@ -42,6 +44,7 @@ static void test_parse_expect_value() {
     EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));
 }
 
+// 测试返回值(值不是那三种字面值) WOOD_PARSE_INVALID_VALUE
 static void test_parse_invalid_value() {
     wood_value v;
     v.type = WOOD_FALSE;
@@ -53,6 +56,7 @@ static void test_parse_invalid_value() {
     EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));  
 }
 
+// 测试返回值(最后一个空白之后还有值) WOOD_PARSE_ROOT_NOT_SINGULAR
 static void test_parse_root_not_singular() {
     wood_value v;
     v.type = WOOD_FALSE;
