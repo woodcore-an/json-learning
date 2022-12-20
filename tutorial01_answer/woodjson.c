@@ -80,6 +80,7 @@ int wood_parse(wood_value* v, const char* json) {
     if ((ret = wood_parse_value(&c, v)) == WOOD_PARSE_OK) {  // 解析值
         wood_parse_whitespace(&c);  // 如果可以解析出完整的有效的值，则再解析值后面是否是空白
         if (*c.json != '\0') {  // 如果解析完空白之后，后面的字符不是空字符'\0'的话，则说明后面还有其他值
+            v->type = WOOD_NULL;  // 最后的空白之后还有其他值，需要将类型重置为WOOD_NULL
             ret = WOOD_PARSE_ROOT_NOT_SINGULAR;  // 返回值设置为 WOOD_PARSE_ROOT_NOT_SINGULAR
         }
     }
