@@ -23,45 +23,63 @@ static void wood_parse_whitespace(wood_context* c) {
     c->json = p;
 }
 
-// 解析 null
-/* null = "null" */
-static int wood_parse_null(wood_context* c, wood_value* v) {
-    EXPECT(c, 'n');  // 利用宏（宏里面利用断言）判断第一个字符是否为 'n'，并跳到下一字符
-    if (c->json[0] != 'u' || c->json[1] != 'l' || c->json[2] != 'l')
-        return WOOD_PARSE_INVALID_VALUE;
-    c->json += 3;
-    v->type = WOOD_NULL;
-    return WOOD_PARSE_OK;
-}
+// // 解析 null
+// /* null = "null" */
+// static int wood_parse_null(wood_context* c, wood_value* v) {
+//     EXPECT(c, 'n');  // 利用宏（宏里面利用断言）判断第一个字符是否为 'n'，并跳到下一字符
+//     if (c->json[0] != 'u' || c->json[1] != 'l' || c->json[2] != 'l')
+//         return WOOD_PARSE_INVALID_VALUE;
+//     c->json += 3;
+//     v->type = WOOD_NULL;
+//     return WOOD_PARSE_OK;
+// }
 
-// 解析 true
-/* null = "true" */
-static int wood_parse_true(wood_context* c, wood_value* v) {
-    EXPECT(c, 't');
-    if (c->json[0] != 'r' || c->json[1] != 'u' || c->json[2] != 'e')
-        return WOOD_PARSE_INVALID_VALUE;
-    c->json += 3;
-    v->type = WOOD_TRUE;
-    return WOOD_PARSE_OK;
-}
+// // 解析 true
+// /* null = "true" */
+// static int wood_parse_true(wood_context* c, wood_value* v) {
+//     EXPECT(c, 't');
+//     if (c->json[0] != 'r' || c->json[1] != 'u' || c->json[2] != 'e')
+//         return WOOD_PARSE_INVALID_VALUE;
+//     c->json += 3;
+//     v->type = WOOD_TRUE;
+//     return WOOD_PARSE_OK;
+// }
 
-// 解析 false
-/* null = "false" */
-static int wood_parse_false(wood_context* c, wood_value* v) {
-    EXPECT(c, 'f');
-    if (c->json[0] != 'a' || c->json[1] != 'l' || c->json[2] != 's' || c->json[3] != 'e')
-        return WOOD_PARSE_INVALID_VALUE;
-    c->json += 4;
-    v->type = WOOD_FALSE;
+// // 解析 false
+// /* null = "false" */
+// static int wood_parse_false(wood_context* c, wood_value* v) {
+//     EXPECT(c, 'f');
+//     if (c->json[0] != 'a' || c->json[1] != 'l' || c->json[2] != 's' || c->json[3] != 'e')
+//         return WOOD_PARSE_INVALID_VALUE;
+//     c->json += 4;
+//     v->type = WOOD_FALSE;
+//     return WOOD_PARSE_OK;
+// }
+
+// 重构合并以上的解析 null、true、false的代码为wood_parse_literal()
+static int wood_parse_literal(wood_context* c, wood_value* v, const char * literal, wood_type type) {
+    size_t i;  // 在 C 语言中，数组长度、索引值最好使用 size_t 类型，而不是 int 或 unsigned 。
+    EXPECT(c, literal[0]);
+    // 由于 true/false/null 的字符数量不一样，因此可以使用 for 循环来作比较，直至'\0'
+    for (i = 0; literal[i + 1]; i++) {
+        if (c->json[i] != literal[i + 1]) {
+            return WOOD_PARSE_INVALID_VALUE;
+        }
+    }
+    c->json += i;
+    v->type = type;
     return WOOD_PARSE_OK;
 }
 
 // 解析值，根据剔除空白之后的第一个字符来决定怎么解析
 static int wood_parse_value(wood_context* c, wood_value* v) {
     switch (*c->json) {
-        case 'n':  return wood_parse_null(c, v);
-        case 't':  return wood_parse_true(c, v);
-        case 'f':  return wood_parse_false(c, v);
+        // case 'n':  return wood_parse_null(c, v);
+        // case 't':  return wood_parse_true(c, v);
+        // case 'f':  return wood_parse_false(c, v);
+        case 'n':  return wood_parse_literal(c, v, "null", WOOD_NULL);
+        case 't':  return wood_parse_literal(c, v, "true", WOOD_TRUE);
+        case 'f':  return wood_parse_literal(c, v, "false", WOOD_FALSE);
         case '\0': return WOOD_PARSE_EXPECT_VALUE;  // 一个 JSON 只含有空白
         default:   return WOOD_PARSE_INVALID_VALUE;
     }
