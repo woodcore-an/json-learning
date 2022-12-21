@@ -48,36 +48,53 @@ static void test_parse_false() {
     EXPECT_EQ_INT(WOOD_FALSE, wood_get_type(&v));
 }
 
+// 利用宏的方式简化测试代码中每次测试一个不合法的 JSON 值时都有4行相似的代码。
+#define TEST_ERROR(error, json)\
+    do {\
+        wood_value v;\
+        v.type = WOOD_FALSE;\
+        EXPECT_EQ_INT(error, wood_parse(&v, json));\
+        EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));\
+    } while(0)
+
 // 测试返回值(json 只含有空白) WOOD_PARSE_EXPECT_VALUE
 static void test_parse_expect_value() {
-    wood_value v;
-    
-    v.type = WOOD_FALSE;
-    EXPECT_EQ_INT(WOOD_PARSE_EXPECT_VALUE, wood_parse(&v, ""));
-    EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));
+    TEST_ERROR(WOOD_PARSE_EXPECT_VALUE, "");
+    TEST_ERROR(WOOD_PARSE_EXPECT_VALUE, " ");
 
-    EXPECT_EQ_INT(WOOD_PARSE_EXPECT_VALUE, wood_parse(&v, " "));
-    EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));
+    // wood_value v;
+    
+    // v.type = WOOD_FALSE;
+    // EXPECT_EQ_INT(WOOD_PARSE_EXPECT_VALUE, wood_parse(&v, ""));
+    // EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));
+
+    // EXPECT_EQ_INT(WOOD_PARSE_EXPECT_VALUE, wood_parse(&v, " "));
+    // EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));
 }
 
 // 测试返回值(值不是那三种字面值) WOOD_PARSE_INVALID_VALUE
 static void test_parse_invalid_value() {
-    wood_value v;
-    v.type = WOOD_FALSE;
-    EXPECT_EQ_INT(WOOD_PARSE_INVALID_VALUE, wood_parse(&v, "nul"));
-    EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));
+    TEST_ERROR(WOOD_PARSE_INVALID_VALUE, "nul");
+    TEST_ERROR(WOOD_PARSE_INVALID_VALUE, "?");
 
-    v.type = WOOD_FALSE;
-    EXPECT_EQ_INT(WOOD_PARSE_INVALID_VALUE, wood_parse(&v, "?"));
-    EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));  
+    // wood_value v;
+    // v.type = WOOD_FALSE;
+    // EXPECT_EQ_INT(WOOD_PARSE_INVALID_VALUE, wood_parse(&v, "nul"));
+    // EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));
+
+    // v.type = WOOD_FALSE;
+    // EXPECT_EQ_INT(WOOD_PARSE_INVALID_VALUE, wood_parse(&v, "?"));
+    // EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));  
 }
 
 // 测试返回值(最后一个空白之后还有值) WOOD_PARSE_ROOT_NOT_SINGULAR
 static void test_parse_root_not_singular() {
-    wood_value v;
-    v.type = WOOD_FALSE;
-    EXPECT_EQ_INT(WOOD_PARSE_ROOT_NOT_SINGULAR, wood_parse(&v, "false x"));
-    EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));
+    TEST_ERROR(WOOD_PARSE_ROOT_NOT_SINGULAR, "null x");
+
+    // wood_value v;
+    // v.type = WOOD_FALSE;
+    // EXPECT_EQ_INT(WOOD_PARSE_ROOT_NOT_SINGULAR, wood_parse(&v, "null x"));
+    // EXPECT_EQ_INT(WOOD_NULL, wood_get_type(&v));
 }
 
 static void test_parse() {
